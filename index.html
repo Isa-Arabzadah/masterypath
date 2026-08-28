@@ -1,353 +1,64 @@
-<!DOCTYPE html>
-<html lang="fa" dir="rtl" id="htmlRoot">
+<!doctype html>
+<html lang="fa" dir="rtl">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Mastery Path</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;500;600;700;800;900&family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
-<style>
-  :root{
-    --bg:#0B1220; --bg2:#111C30; --turq:#2FA7A0; --gold:#C9A227;
-    --sand:#F2ECDD; --sand-dim:#B9B2A0; --line: rgba(242,236,221,0.13); --red:#C25B4A;
-  }
-  *{box-sizing:border-box;}
-  body{
-    margin:0; padding:26px 16px 70px;
-    background:
-      radial-gradient(1100px 600px at 15% -10%, #17263F 0%, transparent 60%),
-      radial-gradient(900px 500px at 100% 0%, #0E1A2C 0%, transparent 55%),
-      var(--bg);
-    color:var(--sand); font-family:'Vazirmatn','Inter',sans-serif; min-height:100vh;
-  }
-  body.lang-en, body.lang-de{ font-family:'Inter','Vazirmatn',sans-serif; }
-  .wrap{max-width:760px; margin:0 auto;}
- 
-  .lang-switch{display:flex; gap:6px; justify-content:flex-end; margin-bottom:16px;}
-  .lang-btn{
-    border:1px solid var(--line); background:var(--bg2); color:var(--sand-dim);
-    border-radius:8px; padding:6px 12px; font-size:12.5px; cursor:pointer; font-family:inherit;
-  }
-  .lang-btn.active{border-color:var(--gold); color:var(--gold);}
- 
-  header{margin-bottom:24px; padding-bottom:20px; border-bottom:1px solid var(--line);}
-  .eyebrow{display:inline-flex; align-items:center; gap:8px; font-size:12.5px; color:var(--gold); font-weight:700; margin-bottom:10px;}
-  h1{font-size:clamp(26px,5.5vw,34px); font-weight:900; margin:0 0 10px;}
-  header p{color:var(--sand-dim); font-size:14.5px; line-height:1.95; max-width:60ch; margin:0 0 6px;}
-  .caveat{font-size:12.5px; color:var(--sand-dim); background:var(--bg2); border:1px solid var(--line); border-radius:10px; padding:10px 12px; margin-top:14px; line-height:1.9;}
-  .panel{background:var(--bg2); border:1px solid var(--line); border-radius:14px; padding:18px; margin-bottom:22px;}
-  .field{margin-bottom:14px;} .field:last-child{margin-bottom:0;}
-  .field label{display:block; font-size:13px; color:var(--turq); font-weight:700; margin-bottom:8px;}
-  input[type=text]{width:100%; background:var(--bg); border:1px solid var(--line); border-radius:10px; color:var(--sand); font-family:inherit; font-size:15.5px; padding:12px 13px;}
-  input[type=text]:focus{outline:2px solid var(--turq); outline-offset:1px;}
-  .chip-row{display:flex; gap:8px; flex-wrap:wrap;}
-  .chip{border:1px solid var(--line); background:var(--bg); color:var(--sand-dim); border-radius:999px; padding:8px 14px; font-size:13px; cursor:pointer; font-family:inherit;}
-  .chip.active{border-color:var(--gold); color:var(--gold); background:rgba(201,162,39,.08);}
-  .btn{width:100%; border:none; border-radius:12px; padding:14px; font-family:inherit; font-weight:800; font-size:15.5px; cursor:pointer; margin-top:16px; background:linear-gradient(90deg, var(--gold), #E0BE55); color:#231a02;}
-  .btn:disabled{opacity:.5; cursor:default;}
-  .status-line{font-size:13px; color:var(--sand-dim); margin-top:10px; min-height:18px;}
-  .status-line.err{color:var(--red);}
-  .loader{display:flex; align-items:center; gap:10px; color:var(--sand-dim); font-size:14px; padding:24px 4px;}
-  .dot{width:7px; height:7px; border-radius:50%; background:var(--gold); animation:pulse 1s infinite ease-in-out;}
-  .dot:nth-child(2){animation-delay:.15s;} .dot:nth-child(3){animation-delay:.3s;}
-  @keyframes pulse{0%,80%,100%{opacity:.25; transform:scale(.8);} 40%{opacity:1; transform:scale(1);}}
-  .summary{background:var(--bg2); border:1px solid var(--gold); border-radius:14px; padding:18px; margin-bottom:20px;}
-  .summary h2{margin:0 0 10px; font-size:18px; font-weight:900; color:var(--gold);}
-  .stat-row{display:flex; gap:18px; flex-wrap:wrap; margin-bottom:10px;}
-  .stat{font-size:13.5px; color:var(--sand-dim);}
-  .stat b{display:block; color:var(--sand); font-size:16px; font-weight:800;}
-  .summary p{margin:0; font-size:14px; line-height:1.9; color:var(--sand-dim);}
-  .pyramid{display:flex; flex-direction:column; align-items:center; gap:3px; margin-bottom:8px;}
-  .level{width:100%; border-radius:12px; border:1px solid var(--line); background:var(--bg2); overflow:hidden; cursor:pointer;}
-  .level.open{border-color:var(--turq);}
-  .level-head{display:flex; align-items:center; gap:14px; padding:16px 18px;}
-  .level-num{flex:0 0 auto; width:34px; height:34px; border-radius:9px; display:flex; align-items:center; justify-content:center; font-weight:800; font-size:14px; color:#0B1220; background:var(--turq);}
-  .level-titles{flex:1; min-width:0;}
-  .level-name{font-weight:800; font-size:16px;}
-  .level-tag{font-size:12.5px; color:var(--sand-dim); margin-top:2px;}
-  .chevron{flex:0 0 auto; color:var(--sand-dim); transition:transform .2s ease; font-size:14px;}
-  .level.open .chevron{transform:rotate(180deg); color:var(--turq);}
-  .level-body{max-height:0; overflow:hidden; transition:max-height .28s ease;}
-  .level.open .level-body{border-top:1px solid var(--line);}
-  .level-body-inner{padding:14px 18px 20px;}
-  .sub-h{font-size:12.5px; font-weight:800; color:var(--gold); margin:14px 0 8px;}
-  .sub-h:first-child{margin-top:0;}
-  ul.plan{margin:0; padding:0; list-style:none;}
-  ul.plan li{font-size:14px; line-height:1.9; color:var(--sand-dim); padding:6px 0; border-bottom:1px dashed var(--line);}
-  ul.plan li:last-child{border-bottom:none;}
-  .res{background:var(--bg); border:1px solid var(--line); border-radius:10px; padding:10px 12px; margin-bottom:8px;}
-  .res:last-child{margin-bottom:0;}
-  .res-top{display:flex; align-items:center; gap:8px; margin-bottom:4px; flex-wrap:wrap;}
-  .res-badge{font-size:11px; font-weight:800; padding:2px 9px; border-radius:999px; background:rgba(47,167,160,.16); color:var(--turq);}
-  .res-title{font-size:14px; font-weight:700;}
-  .res-note{font-size:13px; color:var(--sand-dim); line-height:1.8; margin:0 0 6px;}
-  .res a{color:var(--turq); font-size:12.5px; font-weight:700; text-decoration:none;}
-  .res a:hover{text-decoration:underline;}
-  .empty{color:var(--sand-dim); font-size:14px; text-align:center; padding:20px 10px;}
-  footer{text-align:center; color:var(--sand-dim); font-size:12px; margin-top:34px; line-height:1.9;}
-</style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="theme-color" content="#05091a" />
+  <title>NeuroPath — مسیر یادگیری شما</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Vazirmatn:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css" />
 </head>
-<body class="lang-fa" id="bodyEl">
-<div class="wrap">
-  <div class="lang-switch" id="langSwitch">
-    <button class="lang-btn" data-lang="fa">فارسی</button>
-    <button class="lang-btn" data-lang="en">English</button>
-    <button class="lang-btn" data-lang="de">Deutsch</button>
-  </div>
- 
-  <header>
-    <div class="eyebrow" id="eyebrow">◆</div>
-    <h1 id="titleEl"></h1>
-    <p id="subtitleEl"></p>
-    <div class="caveat" id="caveatEl"></div>
-  </header>
- 
-  <div class="panel">
-    <div class="field">
-      <label id="skillLabelEl"></label>
-      <input id="skill" type="text" />
-    </div>
-    <div class="field">
-      <label id="levelLabelEl"></label>
-      <div class="chip-row" id="levelChips"></div>
-    </div>
-    <div class="field">
-      <label id="timeLabelEl"></label>
-      <div class="chip-row" id="timeChips"></div>
-    </div>
-    <button class="btn" id="goBtn"></button>
-    <div class="status-line" id="status"></div>
-  </div>
- 
-  <div id="loader" style="display:none" class="loader">
-    <div class="dot"></div><div class="dot"></div><div class="dot"></div>
-    <span id="loaderText"></span>
-  </div>
- 
-  <div id="output"></div>
- 
-  <footer id="footerEl"></footer>
-</div>
- 
-<script>
-const DICT = {
-  fa: {
-    dir: 'rtl', title: 'نقشهٔ استاد',
-    subtitle: 'اسم مهارت را بنویس. مسیر یادگیری از صفر تا تسلط را به‌صورت هرمی، با برنامهٔ روزانه و منابع مستند طراحی می‌کند.',
-    caveat: 'زمان‌ها بر اساس بهترین برآورد از منابع معتبر است، نه یک تضمین قطعی.',
-    skillLabel: 'چه مهارتی می‌خواهی یاد بگیری؟', skillPlaceholder: 'مثلاً: گیتار، برنامه‌نویسی پایتون، سرمایه‌گذاری...',
-    levelLabel: 'سطح فعلی‌ات', levels: ['مبتدی کامل', 'کمی آشنا', 'سطح متوسط'],
-    timeLabel: 'چقدر زمان روزانه داری؟', times: ['۱۵-۳۰ دقیقه', '۳۰-۶۰ دقیقه', '۱-۲ ساعت', '+۲ ساعت'],
-    button: 'طراحی مسیر', loading: 'در حال جست‌وجوی زنده و طراحی مسیر...',
-    totalDuration: 'مدت تخمینی تا تسلط', method: 'روش پیشنهادی', dailyPlan: 'برنامهٔ روزانه', resources: 'منابع این مرحله',
-    done: 'مسیر آماده شد — بر اساس جست‌وجوی همین الان.', error: 'خطا در طراحی مسیر. دوباره امتحان کن.',
-    needSkill: 'اول اسم مهارت را بنویس', viewSource: 'مشاهده ↗', footer: 'هر مسیر تازه، از جست‌وجوی زندهٔ همان لحظه ساخته می‌شود.'
-  },
-  en: {
-    dir: 'ltr', title: 'Mastery Path',
-    subtitle: 'Write the skill you want to learn. We design a pyramid-shaped path from zero to mastery, with a daily plan and documented sources.',
-    caveat: 'Timeframes are best estimates from credible sources, not a firm guarantee.',
-    skillLabel: 'What skill do you want to learn?', skillPlaceholder: 'e.g. guitar, Python programming, investing...',
-    levelLabel: 'Your current level', levels: ['Complete beginner', 'Somewhat familiar', 'Intermediate'],
-    timeLabel: 'How much time do you have daily?', times: ['15-30 min', '30-60 min', '1-2 hours', '2+ hours'],
-    button: 'Design my path', loading: 'Searching the live web and designing your path...',
-    totalDuration: 'Estimated time to mastery', method: 'Recommended method', dailyPlan: 'Daily plan', resources: 'Resources for this phase',
-    done: 'Path ready — based on a live search just now.', error: 'Error designing the path. Try again.',
-    needSkill: 'Enter a skill first', viewSource: 'View ↗', footer: 'Every new path is built from a fresh live search.'
-  },
-  de: {
-    dir: 'ltr', title: 'Meisterpfad',
-    subtitle: 'Schreib die Fähigkeit, die du lernen willst. Wir entwerfen einen pyramidenförmigen Pfad von null bis zur Meisterschaft, mit Tagesplan und dokumentierten Quellen.',
-    caveat: 'Zeitangaben sind beste Schätzungen aus glaubwürdigen Quellen, keine feste Garantie.',
-    skillLabel: 'Welche Fähigkeit willst du lernen?', skillPlaceholder: 'z.B. Gitarre, Python-Programmierung, Investieren...',
-    levelLabel: 'Dein aktuelles Niveau', levels: ['Kompletter Anfänger', 'Etwas vertraut', 'Fortgeschritten'],
-    timeLabel: 'Wie viel Zeit hast du täglich?', times: ['15-30 Min', '30-60 Min', '1-2 Std', '2+ Std'],
-    button: 'Pfad entwerfen', loading: 'Live-Websuche läuft, Pfad wird entworfen...',
-    totalDuration: 'Geschätzte Zeit bis zur Meisterschaft', method: 'Empfohlene Methode', dailyPlan: 'Tagesplan', resources: 'Quellen für diese Phase',
-    done: 'Pfad fertig — basierend auf einer Live-Suche gerade eben.', error: 'Fehler beim Entwerfen des Pfads. Erneut versuchen.',
-    needSkill: 'Zuerst eine Fähigkeit eingeben', viewSource: 'Ansehen ↗', footer: 'Jeder neue Pfad basiert auf einer frischen Live-Suche.'
-  }
-};
- 
-function detectLang(){
-  const saved = localStorage.getItem('mp-lang');
-  if (saved && DICT[saved]) return saved;
-  const nav = (navigator.language || 'en').slice(0,2);
-  if (DICT[nav]) return nav;
-  return 'en';
-}
- 
-let currentLang = detectLang();
-let selectedLevelIdx = 0;
-let selectedTimeIdx = 1;
- 
-function applyLang(lang){
-  currentLang = lang;
-  localStorage.setItem('mp-lang', lang);
-  const d = DICT[lang];
-  document.getElementById('htmlRoot').setAttribute('lang', lang);
-  document.getElementById('htmlRoot').setAttribute('dir', d.dir);
-  document.getElementById('bodyEl').className = 'lang-' + lang;
-  document.title = d.title;
- 
-  document.getElementById('titleEl').textContent = d.title;
-  document.getElementById('subtitleEl').textContent = d.subtitle;
-  document.getElementById('caveatEl').textContent = d.caveat;
-  document.getElementById('skillLabelEl').textContent = d.skillLabel;
-  document.getElementById('skill').placeholder = d.skillPlaceholder;
-  document.getElementById('levelLabelEl').textContent = d.levelLabel;
-  document.getElementById('timeLabelEl').textContent = d.timeLabel;
-  document.getElementById('goBtn').textContent = d.button;
-  document.getElementById('loaderText').textContent = d.loading;
-  document.getElementById('footerEl').textContent = d.footer;
- 
-  const levelBox = document.getElementById('levelChips');
-  levelBox.innerHTML = '';
-  d.levels.forEach((txt, i)=>{
-    const b = document.createElement('button');
-    b.className = 'chip' + (i === selectedLevelIdx ? ' active' : '');
-    b.textContent = txt;
-    b.addEventListener('click', ()=>{
-      selectedLevelIdx = i;
-      levelBox.querySelectorAll('.chip').forEach(c=>c.classList.remove('active'));
-      b.classList.add('active');
-    });
-    levelBox.appendChild(b);
-  });
- 
-  const timeBox = document.getElementById('timeChips');
-  timeBox.innerHTML = '';
-  d.times.forEach((txt, i)=>{
-    const b = document.createElement('button');
-    b.className = 'chip' + (i === selectedTimeIdx ? ' active' : '');
-    b.textContent = txt;
-    b.addEventListener('click', ()=>{
-      selectedTimeIdx = i;
-      timeBox.querySelectorAll('.chip').forEach(c=>c.classList.remove('active'));
-      b.classList.add('active');
-    });
-    timeBox.appendChild(b);
-  });
- 
-  document.querySelectorAll('.lang-btn').forEach(btn=>{
-    btn.classList.toggle('active', btn.dataset.lang === lang);
-  });
- 
-  document.getElementById('output').innerHTML = '';
-  setStatus('');
-}
- 
-function setStatus(msg, isErr){
-  const s = document.getElementById('status');
-  s.textContent = msg;
-  s.className = 'status-line' + (isErr ? ' err' : '');
-}
- 
-function renderOutput(data){
-  const d = DICT[currentLang];
-  const out = document.getElementById('output');
-  if(!data){ out.innerHTML = ''; return; }
- 
-  const summary = `
-    <div class="summary">
-      <h2>${data.skill}</h2>
-      <div class="stat-row">
-        <div class="stat">${d.totalDuration}<b>${data.totalDuration || '-'}</b></div>
-        <div class="stat">${d.method}<b>${data.method || '-'}</b></div>
+<body>
+  <div class="background" aria-hidden="true"><span></span><span></span><span></span></div>
+  <main class="app-shell">
+    <nav class="topbar">
+      <a class="brand" href="#top" aria-label="NeuroPath home"><i>✦</i><span>NEUROPATH</span></a>
+      <div class="language-switcher" role="group" aria-label="Language selection">
+        <button data-lang="fa" class="active">FA</button><button data-lang="en">EN</button><button data-lang="de">DE</button>
       </div>
-      <p>${data.methodReason || ''}</p>
-    </div>
-  `;
- 
-  const levels = (data.phases || []).map((ph, idx)=>{
-    const dailyItems = (ph.dailyPlan || []).map(x => `<li>${x}</li>`).join('');
-    const resItems = (ph.resources || []).map(r => `
-      <div class="res">
-        <div class="res-top"><span class="res-badge">${r.type || ''}</span><span class="res-title">${r.title || ''}</span></div>
-        ${r.note ? `<p class="res-note">${r.note}</p>` : ''}
-        ${r.url ? `<a href="${r.url}" target="_blank" rel="noopener">${d.viewSource}</a>` : ''}
+    </nav>
+
+    <header id="top" class="hero">
+      <div class="hero-copy">
+        <p class="eyebrow" data-i18n="eyebrow">نقشه‌ی رشد شخصی شما</p>
+        <h1 data-i18n="title">مسیر یادگیری را<br><em>هوشمندانه</em> بسازید.</h1>
+        <p class="intro" data-i18n="intro">هر سطح را انتخاب کنید و یک برنامه‌ی دقیق، قابل اجرا و متناسب با هدف خود بسازید.</p>
+        <div class="hero-meta"><span><b>∞</b><small data-i18n="metaOne">مسیرهای شخصی‌سازی‌شده</small></span><span><b>24/7</b><small data-i18n="metaTwo">همراه هوشمند شما</small></span></div>
       </div>
-    `).join('');
-    return `
-      <div class="level" data-idx="${idx}">
-        <div class="level-head">
-          <div class="level-num">${idx+1}</div>
-          <div class="level-titles"><div class="level-name">${ph.title || ''}</div><div class="level-tag">${ph.duration || ''}</div></div>
-          <div class="chevron">▾</div>
+      <section class="pyramid-wrap" aria-label="Interactive learning pyramid">
+        <div class="orbit orbit-one"></div><div class="orbit orbit-two"></div><div class="beam"></div>
+        <div class="pyramid" id="pyramid">
+          <button class="tier tier-5" data-tier="mastery"><span class="tier-icon">✦</span><strong data-i18n="mastery">تسلط</strong></button>
+          <button class="tier tier-4" data-tier="advanced"><span class="tier-icon">↗</span><strong data-i18n="advanced">پیشرفته</strong></button>
+          <button class="tier tier-3" data-tier="intermediate"><span class="tier-icon">▤</span><strong data-i18n="intermediate">میانی</strong></button>
+          <button class="tier tier-2" data-tier="beginner"><span class="tier-icon">♙</span><strong data-i18n="beginner">مبتدی</strong></button>
+          <button class="tier tier-1 active" data-tier="foundation"><span class="tier-icon">⌂</span><strong data-i18n="foundation">بنیان</strong></button>
         </div>
-        <div class="level-body">
-          <div class="level-body-inner">
-            <div class="sub-h">${d.dailyPlan}</div>
-            <ul class="plan">${dailyItems || '<li>—</li>'}</ul>
-            <div class="sub-h">${d.resources}</div>
-            ${resItems || '<div class="empty">—</div>'}
-          </div>
-        </div>
-      </div>
-    `;
-  }).join('');
- 
-  out.innerHTML = summary + `<div class="pyramid">${levels}</div>`;
- 
-  out.querySelectorAll('.level-head').forEach(head=>{
-    head.addEventListener('click', ()=>{
-      const level = head.parentElement;
-      const body = level.querySelector('.level-body');
-      const isOpen = level.classList.contains('open');
-      if(isOpen){ level.classList.remove('open'); body.style.maxHeight = null; }
-      else{ level.classList.add('open'); body.style.maxHeight = body.scrollHeight + 'px'; }
-    });
-  });
-}
- 
-async function runGenerate(){
-  const d = DICT[currentLang];
-  const skill = document.getElementById('skill').value.trim();
-  if(!skill){ setStatus(d.needSkill, true); return; }
- 
-  const btn = document.getElementById('goBtn');
-  btn.disabled = true;
-  document.getElementById('loader').style.display = 'flex';
-  document.getElementById('output').innerHTML = '';
-  setStatus('');
- 
-  try{
-    const response = await fetch('/api/generate', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        skill,
-        level: d.levels[selectedLevelIdx],
-        time: d.times[selectedTimeIdx],
-        lang: currentLang
-      })
-    });
- 
-    if(!response.ok){
-      const errData = await response.json().catch(()=>({}));
-      throw new Error(errData.error || 'server error');
-    }
- 
-    const parsed = await response.json();
-    renderOutput(parsed);
-    setStatus(d.done);
-  }catch(err){
-    console.error(err);
-    setStatus(d.error, true);
-    document.getElementById('output').innerHTML = `<div class="empty">${d.error}</div>`;
-  }finally{
-    btn.disabled = false;
-    document.getElementById('loader').style.display = 'none';
-  }
-}
- 
-document.getElementById('goBtn').addEventListener('click', runGenerate);
-document.getElementById('skill').addEventListener('keydown', e=>{ if(e.key==='Enter') runGenerate(); });
-document.querySelectorAll('.lang-btn').forEach(btn=>{
-  btn.addEventListener('click', ()=> applyLang(btn.dataset.lang));
-});
- 
-applyLang(currentLang);
-</script>
+        <div class="tier-card" id="tier-card" aria-live="polite"></div>
+      </section>
+    </header>
+
+    <section class="planner glass">
+      <div class="section-heading"><span>01</span><div><h2 data-i18n="learnHeading">چه چیزی می‌خواهید یاد بگیرید؟</h2><p data-i18n="learnSubheading">یک مهارت، موضوع یا زمینه را جست‌وجو کنید</p></div></div>
+      <label class="search"><span>⌕</span><input id="topic" data-i18n-placeholder="searchPlaceholder" placeholder="مثلاً طراحی رابط کاربری، پایتون، سرمایه‌گذاری..." /></label>
+      <div class="categories" id="categories"></div>
+    </section>
+
+    <section class="choices glass">
+      <div class="choice-block"><div class="section-heading"><span>02</span><div><h2 data-i18n="levelHeading">سطح فعلی شما چیست؟</h2><p data-i18n="levelSubheading">گزینه‌ای را انتخاب کنید که به شما نزدیک‌تر است</p></div></div><div id="levels" class="option-grid four"></div></div>
+      <div class="choice-block"><div class="section-heading"><span>03</span><div><h2 data-i18n="timeHeading">روزانه چقدر زمان دارید؟</h2><p data-i18n="timeSubheading">زمان در دسترس خود را انتخاب کنید</p></div></div><div id="times" class="option-grid four compact"></div></div>
+    </section>
+
+    <section class="goal glass">
+      <div class="section-heading"><span>04</span><div><h2 data-i18n="goalHeading">هدف اصلی شما چیست؟</h2><p data-i18n="goalSubheading">برای ساختن مسیر بهتر به ما کمک کنید</p></div></div>
+      <div class="goal-grid" id="goals"></div>
+      <button class="generate" id="generate"><span data-i18n="generate">ساخت مسیر یادگیری من</span><i>✦</i></button>
+      <p class="promise" data-i18n="promise">مسیر اختصاصی شما براساس هدف، سطح و زمان انتخاب‌شده ساخته می‌شود.</p>
+    </section>
+  </main>
+  <div class="toast" id="toast" role="status"></div>
+  <script src="app.js"></script>
 </body>
 </html>
